@@ -1,5 +1,8 @@
 #include <SFML/Graphics.hpp>
 
+
+
+
 class Game {
 public:
     Game() {}
@@ -13,6 +16,56 @@ public:
         }
     }
 private:
+};
+
+
+class Paddle {
+public:
+    double speed;
+    double size;
+    double xPos;
+    double yPos;
+};
+
+
+
+class PaddlePlayer:Paddle {
+public:
+
+
+};
+
+class PaddleEnemy :Paddle {
+public:
+
+
+};
+
+class Ball {
+public:
+    double xPos;
+    double yPos;
+    double Speedy;
+    double Speedx;
+};
+
+class PlayerData {
+public:
+    std::string PlayerName;
+    std::string Score;
+};
+class EnemyData {
+public:
+    std::string Score;
+};
+class Settings {
+public:
+    double ballSpeedY;
+    double ballSpeedX;
+    double PaddleESize;
+    double paddleSize;
+    double PaddleESpeed;
+    double PaddleSpeed;
 };
 
 class Renderer {
