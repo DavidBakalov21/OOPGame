@@ -1,2 +1,3 @@
 ﻿  main.cpp
+C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(124,46): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   SFMLTEst.vcxproj -> C:\Users\Давід\source\repos\OOPGame\x64\Debug\SFMLTEst.exe
