@@ -1,3 +1,15 @@
 ﻿  main.cpp
-C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(124,46): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(56,52): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(56,39): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(153,46): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(157,45): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Давід\source\repos\OOPGame\SFMLTEst\main.cpp(157,34): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   SFMLTEst.vcxproj -> C:\Users\Давід\source\repos\OOPGame\x64\Debug\SFMLTEst.exe
