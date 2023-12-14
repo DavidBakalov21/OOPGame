@@ -11,9 +11,11 @@ public:
 
 class EnemyData {
 public:
-    int Score;
+    int Score=0;
     void SetScore(int score) {
+   
         Score += score;
+        std::cout <<Score;
     }
 };
 class Paddle {
@@ -21,22 +23,22 @@ public:
     double speed;
     double size;
     double xPos;
-    double yPos=20;
+    double yPos = 20;
 };
 
 class PaddlePlayer : public Paddle {
 public:
     void moveUp() {
         if (yPos > 0) {
-            yPos -= 1.3;
+            yPos -= 1.9;
         }
 
     }
     void moveDown() {
         if (yPos < 610) {
-            yPos += 1.3;
+            yPos += 1.9;
         }
-      
+
     }
 };
 
@@ -46,10 +48,10 @@ public:
 
 class Ball {
 public:
-    double xPos=300;
-    double yPos=300;
-    double Speedy=1;
-    double Speedx=1;
+    double xPos = 300;
+    double yPos = 300;
+    double Speedy = 2;
+    double Speedx = 2;
 
 
     bool collidesWithPlayer(const PaddlePlayer& player) const {
@@ -59,28 +61,29 @@ public:
         return ballBounds.intersects(playerBounds);
     }
 
-    void move(const PaddlePlayer& player, PlayerData& Data) {
+    void move(const PaddlePlayer& player, PlayerData& Data, EnemyData& EData) {
         xPos += Speedx;
         yPos += Speedy;
-        if (yPos>610 || yPos<0)
+        if (yPos > 610 || yPos < 0)
         {
             Speedy *= -1;
         }
         if (xPos > 1650) {
             std::cout << "Bot fail";
+            Data.SetScore(1);
             Speedx *= -1;
-           
+
         }
         if (xPos < 0)
         {
             std::cout << "Player fail";
-            Data.SetScore(-1);
+            EData.SetScore(1);
             Speedx *= -1;
         }
         if (collidesWithPlayer(player)) {
-            std::cout << "Player hit!" << std::endl;         
-            Speedx *= -1; 
-            Data.SetScore(1);
+            std::cout << "Player hit!" << std::endl;
+            Speedx *= -1;
+            //Data.SetScore(1);
         }
 
     }
@@ -120,7 +123,7 @@ public:
 
 class Settings {
 public:
-    
+
 
     void setParameters(double NewSpeedX, double NewSpeedY, double NewSize, double NewESize, double NewPlayerSpeed, double NewEnemySpeed) {
         ballSpeedX = NewSpeedX;
@@ -141,7 +144,8 @@ private:
 
 class Renderer {
 public:
-    Renderer(Game& game, Settings& settings, PaddlePlayer& player, Ball& ball, PlayerData& playerData) : game(game), settings(settings), player(player), ball(ball), playerData(playerData) {}
+    Renderer(Game& game, Settings& settings, PaddlePlayer& player, Ball& ball, PlayerData& playerData, EnemyData& enemyData)
+        : game(game), settings(settings), player(player), ball(ball), playerData(playerData), enemyData(enemyData) {}
 
     void handleInput(sf::RenderWindow& window) {
         game.handleInput(window, player);
@@ -170,17 +174,31 @@ public:
         playerInfoText.setPosition(10.f, 10.f);
         playerInfoText.setString("Player: " + playerData.PlayerName + " Score: " + std::to_string(playerData.Score));
 
-        window.draw(playerInfoText);
 
+
+
+
+        sf::Text EnemyInfoText;
+        EnemyInfoText.setFont(font);
+        EnemyInfoText.setCharacterSize(20);
+        EnemyInfoText.setFillColor(sf::Color::White);
+        EnemyInfoText.setPosition(1450.f, 10.f);
+        EnemyInfoText.setString("Bot Score:" + std::to_string(enemyData.Score));
+
+        window.draw(EnemyInfoText);
+        window.draw(playerInfoText);
         window.draw(playerPaddle);
         window.draw(Gameball);
         window.display();
+
+       
     }
 
 private:
     Ball& ball;
     Game& game;
     Settings settings;
+    EnemyData& enemyData;
     PaddlePlayer& player;
     PlayerData& playerData;
 };
@@ -190,13 +208,14 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1700, 700), "Ping pong");
     Game game;
     Settings settings;
-    PaddlePlayer player; 
+    PaddlePlayer player;
     Ball ball;
     PlayerData playerData;
-    Renderer renderer(game, settings, player,ball, playerData);
+    EnemyData enemy;
+    Renderer renderer(game, settings, player, ball, playerData, enemy);
     while (window.isOpen()) {
         renderer.handleInput(window);
-        ball.move(player, playerData);
+        ball.move(player, playerData, enemy);
         renderer.render(window);
     }
 
