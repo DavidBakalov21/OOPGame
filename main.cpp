@@ -1,100 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-class PlayerData {
-public:
-    std::string PlayerName;
-    int Score = 0;
-    void SetScore(int score) {
-        Score += score;
-    }
-};
-
-class EnemyData {
-public:
-    int Score=0;
-    void SetScore(int score) {
-   
-        Score += score;
-        std::cout <<Score;
-    }
-};
-class Paddle {
-public:
-    double speed;
-    double size;
-    double xPos;
-    double yPos = 20;
-};
-
-class PaddlePlayer : public Paddle {
-public:
-    void moveUp() {
-        if (yPos > 0) {
-            yPos -= 1.9;
-        }
-
-    }
-    void moveDown() {
-        if (yPos < 610) {
-            yPos += 1.9;
-        }
-
-    }
-};
-
-class PaddleEnemy : public Paddle {
-public:
-};
-
-class Ball {
-public:
-    double xPos = 300;
-    double yPos = 300;
-    double Speedy = 2;
-    double Speedx = 2;
-
-
-    bool collidesWithPlayer(const PaddlePlayer& player) const {
-        sf::FloatRect ballBounds(xPos - 30.f, yPos - 30.f, 60.f, 60.f);
-        sf::FloatRect playerBounds(50.f, static_cast<float>(player.yPos), 20.f, 90.f);
-
-        return ballBounds.intersects(playerBounds);
-    }
-
-    void move(const PaddlePlayer& player, PlayerData& Data, EnemyData& EData) {
-        xPos += Speedx;
-        yPos += Speedy;
-        if (yPos > 610 || yPos < 0)
-        {
-            Speedy *= -1;
-        }
-        if (xPos > 1650) {
-            std::cout << "Bot fail";
-            Data.SetScore(1);
-            Speedx *= -1;
-
-        }
-        if (xPos < 0)
-        {
-            std::cout << "Player fail";
-            EData.SetScore(1);
-            Speedx *= -1;
-        }
-        if (collidesWithPlayer(player)) {
-            std::cout << "Player hit!" << std::endl;
-            Speedx *= -1;
-            //Data.SetScore(1);
-        }
-
-    }
-
-    void ChangeSpeed(double XChange, double YChange) {
-        Speedx += XChange;
-        Speedy += YChange;
-    }
-};
-
-
+#include "PaddlePlayer.h"
+#include "PaddleEnemy.h"
+#include "Ball.h"
+#include "PlayerData.h"
+#include "EnemyData.h"
 class Game {
 public:
     Game() {}
@@ -144,8 +54,8 @@ private:
 
 class Renderer {
 public:
-    Renderer(Game& game, Settings& settings, PaddlePlayer& player, Ball& ball, PlayerData& playerData, EnemyData& enemyData)
-        : game(game), settings(settings), player(player), ball(ball), playerData(playerData), enemyData(enemyData) {}
+    Renderer(Game& game, Settings& settings, PaddlePlayer& player, Ball& ball, PlayerData& playerData, EnemyData& enemyData, PaddleEnemy& enemyPaddle)
+        : game(game), settings(settings), player(player), ball(ball), playerData(playerData), enemyData(enemyData), enemyPaddle(enemyPaddle) {}
 
     void handleInput(sf::RenderWindow& window) {
         game.handleInput(window, player);
@@ -154,10 +64,16 @@ public:
     void render(sf::RenderWindow& window) {
         window.clear();
         sf::RectangleShape playerPaddle(sf::Vector2f(20.f, 90.f));
-        playerPaddle.setPosition(50.f, player.yPos);
+        playerPaddle.setPosition(15.f, player.yPos);
         playerPaddle.setFillColor(sf::Color::Green);
 
-        sf::CircleShape Gameball(30.f);
+
+
+        sf::RectangleShape EnemyPaddle(sf::Vector2f(20.f, 90.f));
+        EnemyPaddle.setPosition(1655.f, enemyPaddle.yPos);
+        EnemyPaddle.setFillColor(sf::Color::Red);
+
+        sf::CircleShape Gameball(ball.radius);
         Gameball.setPosition(ball.xPos, ball.yPos);
 
 
@@ -189,6 +105,7 @@ public:
         window.draw(playerInfoText);
         window.draw(playerPaddle);
         window.draw(Gameball);
+        window.draw(EnemyPaddle);
         window.display();
 
        
@@ -201,6 +118,7 @@ private:
     EnemyData& enemyData;
     PaddlePlayer& player;
     PlayerData& playerData;
+    PaddleEnemy& enemyPaddle;
 };
 
 
@@ -212,11 +130,18 @@ int main() {
     Ball ball;
     PlayerData playerData;
     EnemyData enemy;
-    Renderer renderer(game, settings, player, ball, playerData, enemy);
+    PaddleEnemy enemyPaddle;
+    Renderer renderer(game, settings, player, ball, playerData, enemy, enemyPaddle);
+    sf::Clock clock;
+    float dt = 0.0f;
     while (window.isOpen()) {
+        sf::Time elapsed = clock.restart();
+        dt = elapsed.asSeconds();
         renderer.handleInput(window);
-        ball.move(player, playerData, enemy);
+        enemyPaddle.moveTowardsPredictedPosition(ball);
+        ball.move(player, playerData, enemy,dt, enemyPaddle);
         renderer.render(window);
+
     }
 
     return 0;
