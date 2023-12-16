@@ -69,13 +69,16 @@ public:
 
 
 
-        sf::RectangleShape EnemyPaddle(sf::Vector2f(20.f, 200.f));
+        sf::RectangleShape EnemyPaddle(sf::Vector2f(20.f, 130.f));
         EnemyPaddle.setPosition(1655.f, enemyPaddle.yPos);
         EnemyPaddle.setFillColor(sf::Color::Red);
 
         sf::CircleShape Gameball(ball.radius);
         Gameball.setPosition(ball.xPos, ball.yPos);
-
+        sf::Texture textureBall;
+        if (textureBall.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\ball.png")) {
+            Gameball.setTexture(&textureBall);
+        }
 
 
         sf::Font font;
@@ -101,6 +104,15 @@ public:
         EnemyInfoText.setPosition(1450.f, 10.f);
         EnemyInfoText.setString("Bot Score:" + std::to_string(enemyData.Score));
 
+
+       sf::Texture backgroundTexture;
+        backgroundTexture.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\bg.png");
+        sf::Sprite backgroundSprite(backgroundTexture);
+        backgroundSprite.setPosition(0.f, 0.f);
+        backgroundSprite.setScale(static_cast<float>(window.getSize().x) / backgroundSprite.getLocalBounds().width,
+            static_cast<float>(window.getSize().y) / backgroundSprite.getLocalBounds().height);
+
+        window.draw(backgroundSprite);
         window.draw(EnemyInfoText);
         window.draw(playerInfoText);
         window.draw(playerPaddle);
@@ -123,7 +135,9 @@ private:
 
 
 int main() {
+    bool gameStarted = false;
     sf::RenderWindow window(sf::VideoMode(1700, 700), "Ping pong");
+  
     Game game;
     Settings settings;
     PaddlePlayer player;
@@ -136,18 +150,22 @@ int main() {
     sf::Clock predictionClock;
     float dt = 0.0f;
 
+    
     while (window.isOpen()) {
         sf::Time elapsed = clock.restart();
         dt = elapsed.asSeconds();
-        renderer.handleInput(window);
-
-        if (predictionClock.getElapsedTime().asMilliseconds() >= 0.01) {
-            enemyPaddle.moveTowardsPredictedPosition(ball);
-            predictionClock.restart();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !gameStarted) {
+            gameStarted = true; 
         }
-
-        ball.move(player, playerData, enemy, dt, enemyPaddle);
+        if (gameStarted)
+        {
+            renderer.handleInput(window);
+            enemyPaddle.moveTowardsPredictedPosition(ball);
+            ball.move(player, playerData, enemy, dt, enemyPaddle);
+           
+        }
         renderer.render(window);
+      
     }
 
     return 0;

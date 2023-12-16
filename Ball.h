@@ -7,8 +7,8 @@ class Ball {
 public:
     double xPos = 300;
     double yPos = 300;
-    double Speedy = 3;
-    double Speedx = 3;
+    double Speedy =15;
+    double Speedx = 15;
     double radius = 15;
 
     bool collidesWithPlayer(const PaddlePlayer& player, float dt) const;
