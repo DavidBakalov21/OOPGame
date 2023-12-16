@@ -69,7 +69,7 @@ public:
 
 
 
-        sf::RectangleShape EnemyPaddle(sf::Vector2f(20.f, 90.f));
+        sf::RectangleShape EnemyPaddle(sf::Vector2f(20.f, 200.f));
         EnemyPaddle.setPosition(1655.f, enemyPaddle.yPos);
         EnemyPaddle.setFillColor(sf::Color::Red);
 
@@ -133,15 +133,21 @@ int main() {
     PaddleEnemy enemyPaddle;
     Renderer renderer(game, settings, player, ball, playerData, enemy, enemyPaddle);
     sf::Clock clock;
+    sf::Clock predictionClock;
     float dt = 0.0f;
+
     while (window.isOpen()) {
         sf::Time elapsed = clock.restart();
         dt = elapsed.asSeconds();
         renderer.handleInput(window);
-        enemyPaddle.moveTowardsPredictedPosition(ball);
-        ball.move(player, playerData, enemy,dt, enemyPaddle);
-        renderer.render(window);
 
+        if (predictionClock.getElapsedTime().asMilliseconds() >= 0.01) {
+            enemyPaddle.moveTowardsPredictedPosition(ball);
+            predictionClock.restart();
+        }
+
+        ball.move(player, playerData, enemy, dt, enemyPaddle);
+        renderer.render(window);
     }
 
     return 0;

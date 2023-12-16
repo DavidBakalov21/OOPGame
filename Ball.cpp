@@ -20,7 +20,7 @@ bool Ball::collidesWithEnemy(const PaddleEnemy& enemy, float dt) const {
     sf::Vector2f nextBallPos(xPos + Speedx * dt, yPos + Speedy * dt);
     sf::FloatRect currentBallBounds(ballPos.x - radius, ballPos.y - radius, 2 * radius, 2 * radius);
     sf::FloatRect nextBallBounds(nextBallPos.x - radius, nextBallPos.y - radius, 2 * radius, 2 * radius);
-    sf::FloatRect enemyBounds(1655.f, static_cast<float>(enemy.yPos), 20.f, 90.f);
+    sf::FloatRect enemyBounds(1655.f, static_cast<float>(enemy.yPos), 20.f, 200.f);
 
     return nextBallBounds.intersects(enemyBounds);
 }
@@ -46,13 +46,14 @@ void Ball::move(const PaddlePlayer& player, PlayerData& Data, EnemyData& EData, 
     if (collidesWithPlayer(player, dt)) {
         std::cout << "Player hit!" << std::endl;
         xPos += 30;
-        Speedx *= -1.01;
+        Speedx *= -1;
         //Data.SetScore(1);
     }
     if (collidesWithEnemy(enemy, dt))
     {
+        std::cout << "Enemy hit!" << std::endl;
         xPos -= 30;
-        Speedx *= -1.01;
+        Speedx *= -1.07;
     }
 }
 
