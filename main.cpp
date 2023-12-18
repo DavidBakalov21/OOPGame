@@ -30,7 +30,6 @@ public:
         }
     }
 };
-
 class VictoryScreen {
 public:
     VictoryScreen(const std::string& winner) : winner(winner) {}
@@ -139,7 +138,7 @@ private:
 int main() {
     bool gameStarted = false;
     sf::RenderWindow window(sf::VideoMode(1700, 700), "Ping pong");
-  
+    //float modifierSpawnTime = 5.0f;
     Game game;
     PaddlePlayer player;
     Ball ball;
@@ -153,6 +152,9 @@ int main() {
        float dt = elapsed.asSeconds();
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !gameStarted) {
             gameStarted = true; 
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+            gameStarted = false;
         }
         if (gameStarted)
         {
