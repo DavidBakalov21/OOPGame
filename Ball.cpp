@@ -8,8 +8,8 @@
 bool Ball::collidesWithPlayer(const PaddlePlayer& player, float dt) const {
     sf::Vector2f ballPos(xPos, yPos);
     sf::Vector2f nextBallPos(xPos + Speedx * dt, yPos + Speedy * dt);
-    sf::FloatRect currentBallBounds(ballPos.x - radius, ballPos.y - radius, 2 * radius, 2 * radius);
-    sf::FloatRect nextBallBounds(nextBallPos.x - radius, nextBallPos.y - radius, 2 * radius, 2 * radius);
+    sf::FloatRect currentBallBounds(static_cast<float>(ballPos.x - radius), static_cast<float>(ballPos.y - radius), static_cast<float>(2.5 * radius), static_cast<float>(2.5 * radius));
+    sf::FloatRect nextBallBounds(static_cast<float>(nextBallPos.x - radius), static_cast<float>(nextBallPos.y - radius), static_cast<float>(2.5 * radius), static_cast<float>(2.5 * radius));
     sf::FloatRect playerBounds(50.f, static_cast<float>(player.yPos), 20.f, 110.f);
 
     return nextBallBounds.intersects(playerBounds);
@@ -18,8 +18,8 @@ bool Ball::collidesWithPlayer(const PaddlePlayer& player, float dt) const {
 bool Ball::collidesWithEnemy(const PaddleEnemy& enemy, float dt) const {
     sf::Vector2f ballPos(xPos, yPos);
     sf::Vector2f nextBallPos(xPos + Speedx * dt, yPos + Speedy * dt);
-    sf::FloatRect currentBallBounds(ballPos.x - radius, ballPos.y - radius, 2 * radius, 2 * radius);
-    sf::FloatRect nextBallBounds(nextBallPos.x - radius, nextBallPos.y - radius, 2 * radius, 2 * radius);
+    sf::FloatRect currentBallBounds(static_cast<float>(ballPos.x - radius), static_cast<float>(ballPos.y - radius), static_cast<float>(2.5 * radius), static_cast<float>(2.5 * radius));
+    sf::FloatRect nextBallBounds(static_cast<float>(nextBallPos.x - radius), static_cast<float>(nextBallPos.y - radius), static_cast<float>(2.5 * radius), static_cast<float>(2.5 * radius));
     sf::FloatRect enemyBounds(1655.f, static_cast<float>(enemy.yPos), 20.f, 250.f);
 
     return nextBallBounds.intersects(enemyBounds);

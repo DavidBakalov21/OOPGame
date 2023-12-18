@@ -5,6 +5,8 @@
 #include "Ball.h"
 #include "PlayerData.h"
 #include "EnemyData.h"
+#include <SFML/Window.hpp>
+
 class Game {
 public:
     Game() {}
@@ -29,82 +31,86 @@ public:
     }
 };
 
-
-
-class Settings {
+class VictoryScreen {
 public:
+    VictoryScreen(const std::string& winner) : winner(winner) {}
 
-
-    void setParameters(double NewSpeedX, double NewSpeedY, double NewSize, double NewESize, double NewPlayerSpeed, double NewEnemySpeed) {
-        ballSpeedX = NewSpeedX;
-        ballSpeedY = NewSpeedY;
-        PaddleESize = NewESize;
-        paddleSize = NewSize;
-        PaddleESpeed = NewEnemySpeed;
-        PaddleSpeed = NewPlayerSpeed;
+    void handleInput(sf::RenderWindow& window) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+                window.close();
+            }
+        }
     }
+
+    void render(sf::RenderWindow& window) {
+        window.clear();
+        font.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\Arial.ttf");
+        text.setFont(font);
+        text.setCharacterSize(30);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(850.f, 300.f);
+        text.setString(winner + " wins! Press ESC to exit.");
+
+        sf::Texture backgroundTexture;
+        backgroundTexture.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\bg.png");
+        sf::Sprite backgroundSprite(backgroundTexture);
+        backgroundSprite.setPosition(0.f, 0.f);
+        backgroundSprite.setScale(static_cast<float>(window.getSize().x) / backgroundSprite.getLocalBounds().width,
+            static_cast<float>(window.getSize().y) / backgroundSprite.getLocalBounds().height);
+
+        window.draw(backgroundSprite);
+        window.draw(text);
+        window.display();
+    }
+
 private:
-    double ballSpeedY;
-    double ballSpeedX;
-    double PaddleESize;
-    double paddleSize;
-    double PaddleESpeed;
-    double PaddleSpeed;
+    sf::Text text;
+    sf::Font font;
+    std::string winner;
 };
+
+
 
 class Renderer {
 public:
-    Renderer(Game& game, Settings& settings, PaddlePlayer& player, Ball& ball, PlayerData& playerData, EnemyData& enemyData, PaddleEnemy& enemyPaddle)
-        : game(game), settings(settings), player(player), ball(ball), playerData(playerData), enemyData(enemyData), enemyPaddle(enemyPaddle) {}
+    Renderer(Game& game, PaddlePlayer& player, Ball& ball, PlayerData& playerData, EnemyData& enemyData, PaddleEnemy& enemyPaddle)
+        : game(game),  player(player), ball(ball), playerData(playerData), enemyData(enemyData), enemyPaddle(enemyPaddle) {}
 
     void handleInput(sf::RenderWindow& window) {
         game.handleInput(window, player);
     }
-
     void render(sf::RenderWindow& window) {
         window.clear();
         sf::RectangleShape playerPaddle(sf::Vector2f(20.f, 90.f));
         playerPaddle.setPosition(15.f, player.yPos);
         playerPaddle.setFillColor(sf::Color::Green);
-
-
-
         sf::RectangleShape EnemyPaddle(sf::Vector2f(20.f, 130.f));
         EnemyPaddle.setPosition(1655.f, enemyPaddle.yPos);
         EnemyPaddle.setFillColor(sf::Color::Red);
-
         sf::CircleShape Gameball(ball.radius);
         Gameball.setPosition(ball.xPos, ball.yPos);
         sf::Texture textureBall;
-        if (textureBall.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\ball.png")) {
-            Gameball.setTexture(&textureBall);
-        }
-
-
+       textureBall.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\ball.png");
+       Gameball.setTexture(&textureBall);
         sf::Font font;
-        if (!font.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\Arial.ttf")) {
-            return;
-        }
-
+        font.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\Arial.ttf");
         sf::Text playerInfoText;
         playerInfoText.setFont(font);
         playerInfoText.setCharacterSize(20);
         playerInfoText.setFillColor(sf::Color::White);
         playerInfoText.setPosition(10.f, 10.f);
-        playerInfoText.setString("Player: " + playerData.PlayerName + " Score: " + std::to_string(playerData.Score));
-
-
-
-
-
+        playerInfoText.setString("Player: Score: " + std::to_string(playerData.Score));
         sf::Text EnemyInfoText;
         EnemyInfoText.setFont(font);
         EnemyInfoText.setCharacterSize(20);
         EnemyInfoText.setFillColor(sf::Color::White);
-        EnemyInfoText.setPosition(1450.f, 10.f);
+        EnemyInfoText.setPosition(1500.f, 10.f);
         EnemyInfoText.setString("Bot Score:" + std::to_string(enemyData.Score));
-
-
        sf::Texture backgroundTexture;
         backgroundTexture.loadFromFile("C:\\Users\\Давід\\source\\repos\\OOPGame\\x64\\Debug\\bg.png");
         sf::Sprite backgroundSprite(backgroundTexture);
@@ -122,38 +128,29 @@ public:
 
        
     }
-
 private:
     Ball& ball;
     Game& game;
-    Settings settings;
     EnemyData& enemyData;
     PaddlePlayer& player;
     PlayerData& playerData;
     PaddleEnemy& enemyPaddle;
 };
-
-
 int main() {
     bool gameStarted = false;
     sf::RenderWindow window(sf::VideoMode(1700, 700), "Ping pong");
   
     Game game;
-    Settings settings;
     PaddlePlayer player;
     Ball ball;
     PlayerData playerData;
     EnemyData enemy;
     PaddleEnemy enemyPaddle;
-    Renderer renderer(game, settings, player, ball, playerData, enemy, enemyPaddle);
+    Renderer renderer(game,  player, ball, playerData, enemy, enemyPaddle);
     sf::Clock clock;
-    sf::Clock predictionClock;
-    float dt = 0.0f;
-
-    
     while (window.isOpen()) {
         sf::Time elapsed = clock.restart();
-        dt = elapsed.asSeconds();
+       float dt = elapsed.asSeconds();
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !gameStarted) {
             gameStarted = true; 
         }
@@ -164,9 +161,23 @@ int main() {
             ball.move(player, playerData, enemy, dt, enemyPaddle);
            
         }
-        renderer.render(window);
-      
+        if (playerData.Score < 15 && enemy.Score < 15) {
+            renderer.render(window);
+        }
+        else if (playerData.Score >= 15) {
+            VictoryScreen victoryScreen("Player");
+            while (window.isOpen()) {
+                victoryScreen.handleInput(window);
+                victoryScreen.render(window);
+            }
+        }
+        else if (enemy.Score >= 15) {
+            VictoryScreen victoryScreen("Enemy");
+            while (window.isOpen()) {
+                victoryScreen.handleInput(window);
+                victoryScreen.render(window);
+            }
+        } 
     }
-
     return 0;
 }
